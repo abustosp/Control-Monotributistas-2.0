@@ -2,7 +2,110 @@ import pandas as pd
 from tkinter.messagebox import showinfo
 import numpy as np
 import os
-from LIB.Extractor_Facturas import Extraer_PDF_info
+import time
+import re
+import pdfplumber
+import openpyxl
+
+def Extraer_PDF_info(PDFpath: str):
+    '''
+    Extrae los Datos de todos de las facturas PDF de una carpeta que se descargaron del servicio Comprobantes en Línea de AFIP
+
+    Parameters
+    ----------
+    path : str
+        Path de la carpeta donde se encuentran los PDF de las facturas
+    '''
+
+    directorio = PDFpath
+
+    Start = time.time()
+
+    # Listar todos los archivos del directorio y sus subdirectorios en una lista sin backslash
+    lista_archivos = os.listdir(directorio)
+
+    # Filtrar la lista para que solo queden los archivos PDF
+    lista_archivos = [i for i in lista_archivos if i.endswith(".pdf")]
+
+    # Agregar el directorio a cada archivo de la lista
+    lista_archivos = [directorio + "/" + i for i in lista_archivos]
+
+    # Crear un dataframe vacío
+    df = pd.DataFrame(columns=["Archivo", "CUIT del Emisor" , "COD" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])
+
+    # Extraer el texto de los archivos PDF solamente de la primera página
+    for i in lista_archivos:
+        with pdfplumber.open(i) as pdf:
+            primera_pagina = pdf.pages[0]
+            texto = primera_pagina.extract_text()
+            #print(texto)
+            #print("--------------------------------------------------")
+            
+            Archivo = i.split("/")[-1].replace(".pdf", "")
+
+            # Extraer el COD de de factura
+            Cod = re.search(r"COD. (\d+)", texto)
+            Cod = Cod.group(1)
+            #print(Cod)
+
+            # Extraer el CUIT del emisor
+            CUIT = re.search(r"CUIT: (\d+)", texto)
+            CUIT = CUIT.group(1)
+            #print(CUIT)
+
+            # Extraer el punto de venta
+            punto_venta = re.search(r"Punto de Venta: (\d+)", texto)
+            punto_venta = punto_venta.group(1)
+            #print(punto_venta)
+
+            # Extraer el número de factura
+            numero_factura = re.search(r"Comp. Nro: (\d+)", texto)
+            numero_factura = numero_factura.group(1)
+            #print(numero_factura)
+
+            # Extraer la fecha
+            fecha = re.search(r"Fecha de Emisión: (\d+/\d+/\d+)", texto)
+            fecha = fecha.group(1)
+            #print(fecha)
+
+            # Extraer el rango de facturas, si no existe se deja vacío
+            Desde = re.search(r"Desde: (\d+/\d+/\d+)", texto)
+            if Desde == None:
+                Desde = ""
+            else:
+                Desde = Desde.group(1)
+            #print(Desde)
+            Hasta = re.search(r"Hasta:(\d+/\d+/\d+)", texto)
+            if Hasta == None:
+                Hasta = ""
+            else:
+                Hasta = Hasta.group(1)
+            #print(Hasta)
+
+            # Agregar una linea nueva con los datos extraidos
+            df = pd.concat([df, pd.DataFrame([[Archivo, Cod, CUIT, punto_venta, numero_factura, fecha, Desde, Hasta]], columns=["Archivo", "COD" , "CUIT del emisor" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])], ignore_index=True)
+
+    # Transformar las columnas 'COD' , 'CUIT del emisor' , 'Punto de Venta' y 'Número de Factura' a int
+    df["COD"] = df["COD"].astype(int)
+    df["CUIT del emisor"] = df["CUIT del emisor"].astype(np.int64)
+    df["Punto de Venta"] = df["Punto de Venta"].astype(int)
+    df["Número de Factura"] = df["Número de Factura"].astype(int)
+
+    # Crear una columna 'AUX' con el 'COD' , 'CUIT del emisor' , el 'Punto de Venta' y 'Número de Factura'
+    df["AUX"] = df["COD"].astype(str) + "-" + df["Punto de Venta"].astype(str) + "-" + df["Número de Factura"].astype(str)
+
+    # Exportar el dataframe a un archivo csv
+    df.to_excel("Datos de Facturas PDF.xlsx", index=False)
+
+    End = time.time()
+
+    Tiempo_Total = End - Start
+
+    showinfo("Extracción de datos", f"Se extrajeron los datos de {len(lista_archivos)} archivos en {Tiempo_Total} segundos")
+
+    return df
+
+    
 
 def Control(MCpath: str , PDFPath: str):
     '''
@@ -62,9 +165,6 @@ def Control(MCpath: str , PDFPath: str):
     #Eliminar las columas 'Imp. Neto Gravado' , 'Imp. Neto No Gravado' , 'Imp. Op. Exentas' , 'IVA'
     Consolidado.drop(['Imp. Neto Gravado' , 'Imp. Neto No Gravado' , 'Imp. Op. Exentas' , 'IVA'], axis=1, inplace=True)
 
-    #Multiplicar Total tipo de cambio
-    Consolidado['Imp. Total'] *= Consolidado['Tipo Cambio']   
-
     #Cambiar de signo si es una Nota de Crédito
     Consolidado.loc[Consolidado["Tipo"].str.contains("Nota de Crédito"), ['Imp. Total']] *= -1
 
@@ -75,12 +175,7 @@ def Control(MCpath: str , PDFPath: str):
     Info_Facturas_PDF = Extraer_PDF_info(PDFpath=PDFPath)
 
 
-    # Transformar la columna 'Fecha' en formato datetime
-    Consolidado['Fecha'] = pd.to_datetime(Consolidado['Fecha'] , format='%d/%m/%Y')
-
-
     Consolidado['Tipo'] = Consolidado['Tipo'].str.split(" ").str[0].str.strip().astype(int)
-
     
     Consolidado['AUX'] = Consolidado['Tipo'].astype(str) + "-" + Consolidado['Punto de Venta'].astype(str) + "-" + Consolidado['Número Desde'].astype(str)
 
@@ -94,28 +189,65 @@ def Control(MCpath: str , PDFPath: str):
     # Si las columnas 'Desde' y 'Hasta' son NaN entonces Eliminar todas filas donde la columna 'Fecha' no se encuentre entre el rango de fechas iniciales y finales
     ##########Consolidado = Consolidado[(Consolidado['Fecha'] >= fecha_inicial) & (Consolidado['Fecha'] <= fecha_final) & (Consolidado['Desde'].isnull()) & (Consolidado['Hasta'].isnull())]
 
+    # Si las columnas 'Desde' y 'Hasta' son vacíos entonces toman el valor de 'Fecha'
+    Consolidado['Desde'] = Consolidado['Desde'].fillna(Consolidado['Fecha'])
+    Consolidado['Hasta'] = Consolidado['Hasta'].fillna(Consolidado['Fecha'])
+    Consolidado.loc[Consolidado['Desde'] == "", 'Desde'] = Consolidado['Fecha']
+    Consolidado.loc[Consolidado['Hasta'] == "", 'Hasta'] = Consolidado['Fecha']
 
+    # Transformar las columnas 'FECHA EMISION' y 'HASTA' en formato datetime
+    Consolidado['Desde'] = pd.to_datetime(Consolidado['Desde'], format='%d/%m/%Y')
+    Consolidado['Hasta'] = pd.to_datetime(Consolidado['Hasta'], format='%d/%m/%Y')
+    Consolidado['Fecha'] = pd.to_datetime(Consolidado['Fecha'], format='%d/%m/%Y')
 
+    # Crear columna auxiliar con la diferencia entre fecha_inicial y 'FECHA EMISION' en dias
+    Consolidado['Diferencia_inicial'] = Consolidado['Desde'] - fecha_inicial
+    Consolidado['Diferencia_inicial'] = Consolidado['Diferencia_inicial'].dt.days
 
+    # Crear columna auxiliar con la diferencia entre fecha_final y 'HASTA'
+    Consolidado['Diferencia_final'] =  fecha_final - Consolidado['Hasta']
+    Consolidado['Diferencia_final'] = Consolidado['Diferencia_final'].dt.days
 
-    # Transformar nuevamente la columna 'Fecha' en formato fecha de excel
+    # Calcular los dias de diferencia entre 'FECHA EMISION' y 'HASTA'
+    Consolidado['Dias de facturación'] = Consolidado['Hasta'] - Consolidado['Desde'] 
+    Consolidado['Dias de facturación'] = Consolidado['Dias de facturación'].dt.days +1
+
+    # Crear una columa 'Días Efectivos' con el valor de la columna 'Dias de facturación'
+    Consolidado['Días Efectivos'] = Consolidado['Dias de facturación']
+
+    # si la columna 'Diferencia_inicial' es negativa, entonces al valor de la columna 'Días Efectivos' se le resta el valor de la columna 'Diferencia_inicial'
+    Consolidado.loc[Consolidado['Diferencia_inicial'] < 0, 'Días Efectivos'] = Consolidado['Días Efectivos'] + Consolidado['Diferencia_inicial']
+
+    # si la columna 'Diferencia_final' es negativa, entonces al valor de la columna 'Días Efectivos' se le resta el valor de la columna 'Diferencia_final'
+    Consolidado.loc[Consolidado['Diferencia_final'] < 0, 'Días Efectivos'] = Consolidado['Días Efectivos'] + Consolidado['Diferencia_final']
+
+    # Crear una columna 'Importe por día' con el valor de la columna 'Imp. Total' dividido entre el valor de la columna 'Dias de facturación'
+    Consolidado['Importe por día'] = Consolidado['Imp. Total'] / Consolidado['Dias de facturación']
+
+    # Multiplicar el valor de la columna 'Importe por día' por el valor de la columna 'Días Efectivos' y guardar el resultado en la columna 'Importe Prorrateado'
+    Consolidado['Importe Prorrateado'] = Consolidado['Importe por día'] * Consolidado['Días Efectivos']
+
+    # Volver a mostrar las columnas 'Desde', 'Hasta' y 'Fecha' en formato fecha
+    Consolidado['Desde'] = Consolidado['Desde'].dt.strftime('%d/%m/%Y')
+    Consolidado['Hasta'] = Consolidado['Hasta'].dt.strftime('%d/%m/%Y')
     Consolidado['Fecha'] = Consolidado['Fecha'].dt.strftime('%d/%m/%Y')
 
-    #Crear Tabla dinámica con los totales de las columnas  'Imp. Total' por 'Archivo'
-    TablaDinamica = pd.pivot_table(Consolidado, values=['Imp. Total' , 'Tipo'], index=['Cliente' , 'MC'], aggfunc={'Imp. Total': np.sum , 'Tipo': 'count'})
+
+    #Crear Tabla dinámica con los totales de las columnas  'Importe Prorrateado' por 'Archivo'
+    TablaDinamica = pd.pivot_table(Consolidado, values=['Importe Prorrateado' , 'Tipo'], index=['Cliente' , 'MC'], aggfunc={'Importe Prorrateado': np.sum , 'Tipo': 'count'})
 
 
     # Renombrar la columna 'Tipo' por 'Cantidad de Comprobantes' de la TablaDinamica1 , TablaDinamica2 y TablaDinamica3
     TablaDinamica.rename(columns={'Tipo': 'Cantidad de Comprobantes'}, inplace=True)
 
-    # Buscar el valor de 'Imp. Total' en la escala de categorias donde el valor esta en 'Ingresos brutos'
-    TablaDinamica['Ingresos brutos máximos por la categoría'] = TablaDinamica['Imp. Total'].apply(lambda x: Categorias.loc[Categorias['Ingresos brutos'] >= x, 'Ingresos brutos'].iloc[0])
+    # Buscar el valor de 'Importe Prorrateado' en la escala de categorias donde el valor esta en 'Ingresos brutos'
+    TablaDinamica['Ingresos brutos máximos por la categoría'] = TablaDinamica['Importe Prorrateado'].apply(lambda x: Categorias.loc[Categorias['Ingresos brutos'] >= x, 'Ingresos brutos'].iloc[0])
 
     #Buscar la 'Categoría' en la escala de categorias donde el valor esta en 'Ingresos brutos máximos por la categoría'
-    TablaDinamica['Categoría'] = TablaDinamica['Imp. Total'].apply(lambda x: Categorias.loc[Categorias['Ingresos brutos'] >= x, 'Categoria'].iloc[0])
+    TablaDinamica['Categoría'] = TablaDinamica['Importe Prorrateado'].apply(lambda x: Categorias.loc[Categorias['Ingresos brutos'] >= x, 'Categoria'].iloc[0])
 
     # Exportar el Consolidado y la Tabla Dinámica a un archivo de Excel
-    Archivo_final = pd.ExcelWriter('Reporte Recategorizaciones de monotirbutistas.xlsx', engine='openpyxl')
+    Archivo_final = pd.ExcelWriter('Reporte Recategorizaciones de Monotributistas.xlsx', engine='openpyxl')
     TablaDinamica.to_excel(Archivo_final, sheet_name='Tabla Dinámica', index=True)
     Consolidado.to_excel(Archivo_final, sheet_name='Consolidado', index=False)
     Archivo_final.close()
