@@ -1,10 +1,20 @@
 import pandas as pd
-from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showinfo
 import numpy as np
 import os
+from LIB.Extractor_Facturas import Extraer_PDF_info
 
-def Control():
+def Control(MCpath: str , PDFPath: str):
+    '''
+    Controla los datos de los archivos de 'Mis Comprobantes' con las escalas de categorías de AFIP
+
+    Parameters
+    ----------
+    MCpath : str
+        Path de la carpeta donde se encuentran los archivos de 'Mis Comprobantes'
+    PDFPath : str
+        Path de la carpeta donde se encuentran los PDF de las facturas
+    '''
 
     # Leer Excel con las tablas de las escalas
     Categorias = pd.read_excel('Categorias.xlsx')
@@ -17,13 +27,13 @@ def Control():
     fecha_final = pd.to_datetime(fecha_final , format='%d/%m/%Y')
 
     # Preguntar por el Excel con los Archivos de 'Mis Comprobantes'
-    Archivos = askopenfilename(title="Seleccione el Excel con las ubicaciones Archivos de 'Mis Comprobantes'")
+    Archivos = os.listdir(MCpath)
 
-    # Leer el Excel con los Archivos de 'Mis Comprobantes'
-    Archivos = pd.read_excel(Archivos) 
+    # Agregar el directorio a cada archivo de la lista
+    Archivos = [MCpath + "/" + i for i in Archivos]
 
-    # transformar la primer columna en una lista
-    Archivos = Archivos.iloc[:,0].tolist()
+    # Filtrar la lista para que solo queden los archivos Excel
+    Archivos = [i for i in Archivos if i.endswith(".xlsx")]
 
     # Crear un DataFrame vacio para guardar los datos consolidados
     Consolidado = pd.DataFrame()
@@ -60,12 +70,33 @@ def Control():
 
     #Crear columna de 'MC' con los valores 'archivo' que van desde el caracter 5 al 8 en la Consolidado
     Consolidado['MC'] = Consolidado['Archivo'].str.split("-").str[1].str.strip()
-    
+
+
+    Info_Facturas_PDF = Extraer_PDF_info(PDFpath=PDFPath)
+
+
     # Transformar la columna 'Fecha' en formato datetime
     Consolidado['Fecha'] = pd.to_datetime(Consolidado['Fecha'] , format='%d/%m/%Y')
 
-    # Eliminar todas las filas que no esten en el rango de fechas
-    Consolidado = Consolidado[(Consolidado['Fecha'] >= fecha_inicial) & (Consolidado['Fecha'] <= fecha_final)]
+
+    Consolidado['Tipo'] = Consolidado['Tipo'].str.split(" ").str[0].str.strip().astype(int)
+
+    
+    Consolidado['AUX'] = Consolidado['Tipo'].astype(str) + "-" + Consolidado['Punto de Venta'].astype(str) + "-" + Consolidado['Número Desde'].astype(str)
+
+    # Merge con la tabla Info_Facturas_PDF 
+    Consolidado = pd.merge(Consolidado , 
+                           Info_Facturas_PDF[['AUX' , 'Desde' , 'Hasta']] , 
+                           how='left' , 
+                           left_on='AUX' , 
+                           right_on='AUX')
+
+    # Si las columnas 'Desde' y 'Hasta' son NaN entonces Eliminar todas filas donde la columna 'Fecha' no se encuentre entre el rango de fechas iniciales y finales
+    ##########Consolidado = Consolidado[(Consolidado['Fecha'] >= fecha_inicial) & (Consolidado['Fecha'] <= fecha_final) & (Consolidado['Desde'].isnull()) & (Consolidado['Hasta'].isnull())]
+
+
+
+
 
     # Transformar nuevamente la columna 'Fecha' en formato fecha de excel
     Consolidado['Fecha'] = Consolidado['Fecha'].dt.strftime('%d/%m/%Y')
@@ -83,15 +114,14 @@ def Control():
     #Buscar la 'Categoría' en la escala de categorias donde el valor esta en 'Ingresos brutos máximos por la categoría'
     TablaDinamica['Categoría'] = TablaDinamica['Imp. Total'].apply(lambda x: Categorias.loc[Categorias['Ingresos brutos'] >= x, 'Categoria'].iloc[0])
 
-    # Exportar
-    Archivo_final = pd.ExcelWriter('Control de Monotributistas.xlsx', engine='openpyxl')
-    Consolidado.to_excel(Archivo_final, sheet_name="Consolidado" , index=False)
-
-    #Exportar Tabla Dinámica a la hoja 'TD'
-    TablaDinamica.to_excel(Archivo_final, sheet_name="TD" , index=True , merge_cells=False)
+    # Exportar el Consolidado y la Tabla Dinámica a un archivo de Excel
+    Archivo_final = pd.ExcelWriter('Reporte Recategorizaciones de monotirbutistas.xlsx', engine='openpyxl')
+    TablaDinamica.to_excel(Archivo_final, sheet_name='Tabla Dinámica', index=True)
+    Consolidado.to_excel(Archivo_final, sheet_name='Consolidado', index=False)
+    Archivo_final.close()
 
     #Guardar el archivo
-    Archivo_final.save()
+    #Archivo_final.save()
 
     #Mostrar mensaje de finalización
     showinfo(title="Finalizado", message="El archivo se ha generado correctamente")
