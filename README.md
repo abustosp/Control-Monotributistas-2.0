@@ -66,6 +66,9 @@ Los pasos para ejecutar el bot son los siguientes:
 
 ## Particularidades del BOT/Programa:
 
+- El bot corre en Firefox, por lo que se debe tener instalado el Firefox y Uipath.
+
+- El bot Corre bajo windows 10 como mínimo (se puede ejecutar en una VM de linux o MAC con Win10).
 
 - En caso que no se guarden los Archivos con el nombre y/o ubicación definidas en el Excel se debe ejecutar el bot que contiene en su nombre "sin ST"
 
