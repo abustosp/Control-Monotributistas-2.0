@@ -8,9 +8,25 @@ El licenciamiento es bajo PL (es decir que no se puede distribuir comercialmente
 
 ---
 
+## Orden de Ejecución
+
+1. Actualizar el Excel de `Categorias.xlsx` Tanto en la solapa de `categoria` como la de `Rango de Fechas`
+
+2. Actualizar en Excel dentro de la carpeta `BOTS` con el nombre de `Listado Mis Comprobantes 2.0.xlsx` con los datos fiscales de los monotributistas y el rango de fechas a descargar.
+
+2. Se debe ejecutar el bot que se llama `Descarga-MC-AFIP.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga-MC-AFIP Sin ST.xaml`)
+
+3. Una vez descargados los archivos de Mis Comprobantes se debe ejecutar el bot `Descarga Facturas Multiusuario.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga Facturas Multiusuario Sin ST.xaml`)
+
+4. Finalmente una vez que se tienen los archivos de Mis Comprobantes y las Facturas se debe ejecutar el Programa `Control-Monotributistas-2.0.exe` que generará un reporte en la carpeta donde se encuenta en instalador con el nombre `Reporte Recategorizaciones de Monotributistas.xlsx` y `Datos de Facturas PDF.xlsx`
+
+5. Ejecutar el programa `Control-Monotributistas-2.0.exe` para generar el reporte de recategorizaciones.
+
+---
+
 ## Ejecución de los Bots
 
-Los pasos para ejecutar el bot son los siguientes:
+Los pasos para ejecutar los bots son los siguientes:
 
 1. Crearse una cuenta en UiPath ([https://www.uipath.com/](https://www.uipath.com/)).
 
@@ -30,37 +46,13 @@ Los pasos para ejecutar el bot son los siguientes:
 
     3. Crear una nueva organización.
 
-4. Descargar el BOT. Acá hay 3 opciones:
-   
-   1. Descargar el ZIP.
-   
-   2. Descargarlo con la integración de GIT desde el Uipath.
-
-     - Si no aparece la opción de GIT en el Uipath se debe instalar el GIT desde las configuraciones de Uipath
-
-     ![Configuración de GIT](https://github.com/abustosp/Configuraciones/blob/master/Uipath/Habilitar-GIT.png "Configuración de GIT")
-   
-   3. Descargar el repositorio con GIT utilizando el comando `git clone https://github.com/abustosp/Control-Monotributistas-2.0.git`
+4. Ir a la carpeta BOTS
 
 5. Una vez Descargados los archivos se debe:
    
    1. Abrir el project.json o archivo .xaml
    
    2. Ejecutarlo (hacer click en el boton de "Play").
-
-## Orden de Ejecución
-
-1. Actualizar el Excel de `Categorias.xlsx` Tanto en la solapa de `categoria` como la de `Rango de Fechas`
-
-2. Actualizar en Excel dentro de la carpeta `BOTS` con el nombre de `Listado Mis Comprobantes 2.0.xlsx` con los datos fiscales de los monotributistas y el rango de fechas a descargar.
-
-2. Se debe ejecutar el bot que se llama `Descarga-MC-AFIP.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga-MC-AFIP Sin ST.xaml`)
-
-3. Una vez descargados los archivos de Mis Comprobantes se debe ejecutar el bot `Descarga Facturas Multiusuario.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga Facturas Multiusuario Sin ST.xaml`)
-
-4. Finalmente una vez que se tienen los archivos de Mis Comprobantes y las Facturas se debe ejecutar el Programa `Control-Monotributistas-2.0.exe` que generará un reporte en la carpeta donde se encuenta en instalador con el nombre `Reporte Recategorizaciones de Monotributistas.xlsx` y `Datos de Facturas PDF.xlsx`
-
-5. Ejecutar el programa `Control-Monotributistas-2.0.exe` para generar el reporte de recategorizaciones.
 
 ---
 
