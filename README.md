@@ -10,17 +10,19 @@ El licenciamiento es bajo PL (es decir que no se puede distribuir comercialmente
 
 ## Orden de Ejecución
 
-1. Actualizar el Excel de `Categorias.xlsx` Tanto en la solapa de `categoria` como la de `Rango de Fechas`
+1. Instalar el Programa (ya incluye los bots) `Control-Monotributistas-2.0.exe`. El instalador se encuenta a la derecha donde dice `Releases`
 
-2. Actualizar en Excel dentro de la carpeta `BOTS` con el nombre de `Listado Mis Comprobantes 2.0.xlsx` con los datos fiscales de los monotributistas y el rango de fechas a descargar.
+2. Actualizar el Excel de `Categorias.xlsx` Tanto en la solapa de `categoria` como la de `Rango de Fechas`
 
-2. Se debe ejecutar el bot que se llama `Descarga-MC-AFIP.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga-MC-AFIP Sin ST.xaml`)
+3. Actualizar en Excel dentro de la carpeta `BOTS` con el nombre de `Listado Mis Comprobantes 2.0.xlsx` con los datos fiscales de los monotributistas y el rango de fechas a descargar.
 
-3. Una vez descargados los archivos de Mis Comprobantes se debe ejecutar el bot `Descarga Facturas Multiusuario.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga Facturas Multiusuario Sin ST.xaml`)
+4. Se debe ejecutar el bot que se llama `Descarga-MC-AFIP.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga-MC-AFIP Sin ST.xaml`)
 
-4. Finalmente una vez que se tienen los archivos de Mis Comprobantes y las Facturas se debe ejecutar el Programa `Control-Monotributistas-2.0.exe` que generará un reporte en la carpeta donde se encuenta en instalador con el nombre `Reporte Recategorizaciones de Monotributistas.xlsx` y `Datos de Facturas PDF.xlsx`
+5. Una vez descargados los archivos de Mis Comprobantes se debe ejecutar el bot `Descarga Facturas Multiusuario.xaml` (en caso que los archivos no se guarden dentro de la carpeta del bot se debe ejecutar la versión que se llama `Descarga Facturas Multiusuario Sin ST.xaml`)
 
-5. Ejecutar el programa `Control-Monotributistas-2.0.exe` para generar el reporte de recategorizaciones.
+6. Finalmente una vez que se tienen los archivos de Mis Comprobantes y las Facturas se debe ejecutar el Programa `Control-Monotributistas-2.0.exe` que generará un reporte en la carpeta donde se encuenta en instalador con el nombre `Reporte Recategorizaciones de Monotributistas.xlsx` y `Datos de Facturas PDF.xlsx`
+
+7. Ejecutar el programa `Control-Monotributistas-2.0.exe` para generar el reporte de recategorizaciones.
 
 ---
 
