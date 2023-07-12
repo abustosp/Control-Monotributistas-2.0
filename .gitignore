@@ -2,8 +2,8 @@ BOTS/.entities
 BOTS/.local
 BOTS/.package
 BOTS/.templates
-BOTS/Facturas Descargadas/
-BOTS/MC Descargados/
+#BOTS/Facturas Descargadas/
+#BOTS/MC Descargados/
 Datos de Facturas PDF.xlsx
 LIB/__pycache__/
 Reporte Recategorizaciones de Monotributistas.xlsx
