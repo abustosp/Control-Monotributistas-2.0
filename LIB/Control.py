@@ -30,8 +30,14 @@ def Extraer_PDF_info(PDFpath: str):
     # Agregar el directorio a cada archivo de la lista
     lista_archivos = [directorio + "/" + i for i in lista_archivos]
 
+    # Cambiar los backslash por slash
+    lista_archivos = [i.replace("\\", "/") for i in lista_archivos] 
+
+    # Eliminar de la lista los PDF que pesen menos de 10 KB
+    lista_archivos = [i for i in lista_archivos if os.path.getsize(i) > 10000]
+
     # Crear un dataframe vacío
-    df = pd.DataFrame(columns=["Archivo", "CUIT del Emisor" , "COD" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])
+    df = pd.DataFrame(columns=["Archivo PDF", "CUIT del Emisor" , "COD" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])
 
     # Extraer el texto de los archivos PDF solamente de la primera página
     for i in lista_archivos:
@@ -83,7 +89,7 @@ def Extraer_PDF_info(PDFpath: str):
             #print(Hasta)
 
             # Agregar una linea nueva con los datos extraidos
-            df = pd.concat([df, pd.DataFrame([[Archivo, Cod, CUIT, punto_venta, numero_factura, fecha, Desde, Hasta]], columns=["Archivo", "COD" , "CUIT del emisor" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])], ignore_index=True)
+            df = pd.concat([df, pd.DataFrame([[Archivo, Cod, CUIT, punto_venta, numero_factura, fecha, Desde, Hasta]], columns=["Archivo PDF", "COD" , "CUIT del emisor" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])], ignore_index=True)
 
     # Transformar las columnas 'COD' , 'CUIT del emisor' , 'Punto de Venta' y 'Número de Factura' a int
     df["COD"] = df["COD"].astype(int)
@@ -118,6 +124,8 @@ def Control(MCpath: str , PDFPath: str):
     PDFPath : str
         Path de la carpeta donde se encuentran los PDF de las facturas
     '''
+    # Mostrar mensaje de inicio
+    showinfo("Control de datos", "Se iniciará el control de los datos de los archivos de 'Mis Comprobantes' con las escalas de categorías de AFIP y los PDF de las facturas")
 
     # Leer Excel con las tablas de las escalas
     Categorias = pd.read_excel('Categorias.xlsx')
@@ -181,10 +189,15 @@ def Control(MCpath: str , PDFPath: str):
 
     # Merge con la tabla Info_Facturas_PDF 
     Consolidado = pd.merge(Consolidado , 
-                           Info_Facturas_PDF[['AUX' , 'Desde' , 'Hasta']] , 
+                           Info_Facturas_PDF[['AUX' , 'Desde' , 'Hasta' , 'Archivo PDF']] , 
                            how='left' , 
                            left_on='AUX' , 
                            right_on='AUX')
+
+    # Crear la columna 'Cruzado' con valores 'Si' o 'No' dependiendo si se cruzó o no la información
+    Consolidado['Cruzado'] = np.nan
+    Consolidado.loc[Consolidado['Archivo PDF'].notnull() , 'Cruzado'] = 'Si'
+    Consolidado.loc[Consolidado['Archivo PDF'].isnull() , 'Cruzado'] = 'No'
 
     # Si las columnas 'Desde' y 'Hasta' son NaN entonces Eliminar todas filas donde la columna 'Fecha' no se encuentre entre el rango de fechas iniciales y finales
     ##########Consolidado = Consolidado[(Consolidado['Fecha'] >= fecha_inicial) & (Consolidado['Fecha'] <= fecha_final) & (Consolidado['Desde'].isnull()) & (Consolidado['Hasta'].isnull())]
@@ -232,6 +245,9 @@ def Control(MCpath: str , PDFPath: str):
     Consolidado['Hasta'] = Consolidado['Hasta'].dt.strftime('%d/%m/%Y')
     Consolidado['Fecha'] = Consolidado['Fecha'].dt.strftime('%d/%m/%Y')
 
+    # Contar las cantidades de 'No' en la columna 'Cruzado' y guardar el resultado en la variable 'No_Cruzado'
+    No_Cruzado = Consolidado['Cruzado'].value_counts()['No'] 
+
 
     #Crear Tabla dinámica con los totales de las columnas  'Importe Prorrateado' por 'Archivo'
     TablaDinamica = pd.pivot_table(Consolidado, values=['Importe Prorrateado' , 'Tipo'], index=['Cliente' , 'MC'], aggfunc={'Importe Prorrateado': np.sum , 'Tipo': 'count'})
@@ -256,7 +272,7 @@ def Control(MCpath: str , PDFPath: str):
     #Archivo_final.save()
 
     #Mostrar mensaje de finalización
-    showinfo(title="Finalizado", message="El archivo se ha generado correctamente")
+    showinfo(title="Finalizado", message=f"El archivo se ha generado correctamente.\n \nCantidad de Facturas no cruzados: {No_Cruzado}")
 
 if __name__ == "__main__":
     Control()
