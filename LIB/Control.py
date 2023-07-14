@@ -245,8 +245,10 @@ def Control(MCpath: str , PDFPath: str):
     Consolidado['Hasta'] = Consolidado['Hasta'].dt.strftime('%d/%m/%Y')
     Consolidado['Fecha'] = Consolidado['Fecha'].dt.strftime('%d/%m/%Y')
 
-    # Contar las cantidades de 'No' en la columna 'Cruzado' y guardar el resultado en la variable 'No_Cruzado'
-    No_Cruzado = Consolidado['Cruzado'].value_counts()['No'] 
+    No_Cruzado = 0
+
+    if 'No' in Consolidado['Cruzado'].values:
+        No_Cruzado = Consolidado['Cruzado'].value_counts()['No']
 
 
     #Crear Tabla dinámica con los totales de las columnas  'Importe Prorrateado' por 'Archivo'
