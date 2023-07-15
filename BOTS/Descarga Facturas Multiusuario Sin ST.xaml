@@ -1,4 +1,4 @@
-<Activity mc:Ignorable="sap sap2010" x:Class="Main" VisualBasic.Settings="{x:Null}" sap:VirtualizedContainerService.HintSize="628,732" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" VisualBasic.Settings="{x:Null}" sap:VirtualizedContainerService.HintSize="624,732" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <TextExpression.NamespacesForImplementation>
     <scg:List x:TypeArguments="x:String" Capacity="37">
       <x:String>System.Activities</x:String>
@@ -134,7 +134,7 @@
           <av:PointCollection x:Key="ConnectorLocation">300,208.5 300,267.5</av:PointCollection>
         </scg:Dictionary>
       </sap:WorkflowViewStateService.ViewState>
-      <Sequence DisplayName="Proceso Completo" sap:VirtualizedContainerService.HintSize="1110,6691" sap2010:WorkflowViewState.IdRef="Sequence_151">
+      <Sequence DisplayName="Proceso Completo" sap:VirtualizedContainerService.HintSize="1110,6693" sap2010:WorkflowViewState.IdRef="Sequence_151">
         <Sequence.Variables>
           <Variable x:TypeArguments="x:String" Name="UbicacionaGuardar" />
         </Sequence.Variables>
@@ -171,25 +171,25 @@
             </scg:Dictionary>
           </sap:WorkflowViewStateService.ViewState>
         </ui:ExcelApplicationScope>
-        <ui:OpenBrowser AutomaticallyDownloadWebDriver="{x:Null}" CommunicationMethod="{x:Null}" Hidden="{x:Null}" NewSession="{x:Null}" Private="{x:Null}" UiBrowser="{x:Null}" BrowserType="Firefox" DisplayName="Proceso en Firefox" sap:VirtualizedContainerService.HintSize="1048,6259" sap2010:WorkflowViewState.IdRef="OpenBrowser_2" Url="https://auth.afip.gob.ar/contribuyente_/login.xhtml">
+        <ui:OpenBrowser AutomaticallyDownloadWebDriver="{x:Null}" CommunicationMethod="{x:Null}" Hidden="{x:Null}" NewSession="{x:Null}" Private="{x:Null}" UiBrowser="{x:Null}" BrowserType="Firefox" DisplayName="Proceso en Firefox" sap:VirtualizedContainerService.HintSize="1048,6261" sap2010:WorkflowViewState.IdRef="OpenBrowser_2" Url="https://auth.afip.gob.ar/contribuyente_/login.xhtml">
           <ui:OpenBrowser.Body>
             <ActivityAction x:TypeArguments="x:Object">
               <ActivityAction.Argument>
                 <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
               </ActivityAction.Argument>
-              <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="1014,6157" sap2010:WorkflowViewState.IdRef="Sequence_205">
+              <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="1014,6159" sap2010:WorkflowViewState.IdRef="Sequence_205">
                 <sap:WorkflowViewStateService.ViewState>
                   <scg:Dictionary x:TypeArguments="x:String, x:Object">
                     <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                   </scg:Dictionary>
                 </sap:WorkflowViewStateService.ViewState>
-                <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" DataTable="[Clientes]" DisplayName="For Each Row in Data Table" sap:VirtualizedContainerService.HintSize="952,6046" sap2010:WorkflowViewState.IdRef="ForEachRow_7">
+                <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" DataTable="[Clientes]" DisplayName="For Each Row in Data Table" sap:VirtualizedContainerService.HintSize="952,6048" sap2010:WorkflowViewState.IdRef="ForEachRow_7">
                   <ui:ForEachRow.Body>
                     <ActivityAction x:TypeArguments="sd:DataRow">
                       <ActivityAction.Argument>
                         <DelegateInArgument x:TypeArguments="sd:DataRow" Name="Row" />
                       </ActivityAction.Argument>
-                      <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="918,5931" sap2010:WorkflowViewState.IdRef="Sequence_204">
+                      <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="918,5933" sap2010:WorkflowViewState.IdRef="Sequence_204">
                         <Sequence.Variables>
                           <Variable x:TypeArguments="x:String" Default="[row(&quot;Nombre en RCEL&quot;).ToString]" Name="Cliente_a_Facturar" />
                           <Variable x:TypeArguments="x:Boolean" Name="MisServicios" />
@@ -296,7 +296,7 @@
                             <Sequence sap2010:WorkflowViewState.IdRef="Sequence_261" />
                           </If.Else>
                         </If>
-                        <Assign sap:VirtualizedContainerService.HintSize="856,81" sap2010:WorkflowViewState.IdRef="Assign_2">
+                        <Assign sap:VirtualizedContainerService.HintSize="856,82" sap2010:WorkflowViewState.IdRef="Assign_2">
                           <Assign.To>
                             <OutArgument x:TypeArguments="x:String">[UbicacionaGuardar]</OutArgument>
                           </Assign.To>
@@ -304,7 +304,7 @@
                             <InArgument x:TypeArguments="x:String">[Row("Ubicación Descarga").ToString]</InArgument>
                           </Assign.Value>
                         </Assign>
-                        <Assign sap:VirtualizedContainerService.HintSize="856,81" sap2010:WorkflowViewState.IdRef="Assign_3">
+                        <Assign sap:VirtualizedContainerService.HintSize="856,82" sap2010:WorkflowViewState.IdRef="Assign_3">
                           <Assign.To>
                             <OutArgument x:TypeArguments="x:String">[Raiz]</OutArgument>
                           </Assign.To>
@@ -610,7 +610,7 @@
                                                             </ui:Target>
                                                           </ui:Click.Target>
                                                         </ui:Click>
-                                                        <ui:TypeInto AlterIfDisabled="{x:Null}" ClickBeforeTyping="{x:Null}" DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" EmptyField="{x:Null}" SendWindowMessages="{x:Null}" Activate="True" DisplayName="Escribir Ubicación + Nombre Archivo" sap:VirtualizedContainerService.HintSize="388,135" sap2010:WorkflowViewState.IdRef="TypeInto_529" SimulateType="True" Text="[string.Format(&quot;{0}Facturas Descargadas\{1}_{2:000}_{3:00000}_{4:00000000}_{5}.pdf&quot; , Raiz,  Factura(&quot;Nro. Doc. Receptor&quot;), Factura(&quot;Tipo&quot;), Factura(&quot;Punto de Venta&quot;), Factura(&quot;Número Desde&quot;), Factura(&quot;Denominación Receptor&quot;))]">
+                                                        <ui:TypeInto AlterIfDisabled="{x:Null}" ClickBeforeTyping="{x:Null}" DelayBefore="{x:Null}" DelayMS="{x:Null}" EmptyField="{x:Null}" SendWindowMessages="{x:Null}" Activate="True" DelayBetweenKeys="0" DisplayName="Escribir Ubicación + Nombre Archivo" sap:VirtualizedContainerService.HintSize="388,135" sap2010:WorkflowViewState.IdRef="TypeInto_529" SimulateType="False" Text="[string.Format(&quot;{0}Facturas Descargadas\{1}_{2:000}_{3:00000}_{4:00000000}_{5}.pdf&quot; , Raiz,  Factura(&quot;Nro. Doc. Receptor&quot;), Factura(&quot;Tipo&quot;), Factura(&quot;Punto de Venta&quot;), Factura(&quot;Número Desde&quot;), Factura(&quot;Denominación Receptor&quot;))]">
                                                           <ui:TypeInto.Target>
                                                             <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Id="5efe7e37-483d-4eea-adbf-6165a0a2f7bb" InformativeScreenshot="d9bef452afff08f2be733e884b1fcab9" Selector="&lt;wnd app='firefox.exe' cls='#32770' omit:title='Ingrese nombre de archivo a guardar…' /&gt;&lt;wnd omit:aaname='Panel del explorador' omit:cls='DirectUIHWND' /&gt;&lt;wnd omit:aaname='Nombre:' cls='ComboBox' /&gt;&lt;wnd ctrlid='1001' /&gt;">
                                                               <ui:Target.TimeoutMS>
