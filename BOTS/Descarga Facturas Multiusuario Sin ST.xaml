@@ -444,7 +444,7 @@
                                   </scg:Dictionary>
                                 </sap:WorkflowViewStateService.ViewState>
                               </ui:ExcelApplicationScope>
-                              <ui:CopyFile ContinueOnError="{x:Null}" Destination="F:\Proyectos Python\Scripts\Control-Monotributistas-2.0\BOTS\Control Facturas" DisplayName="Copy File" sap:VirtualizedContainerService.HintSize="826,154" sap2010:WorkflowViewState.IdRef="CopyFile_1" Path="[UbicacionaGuardar +row(&quot;MCE&quot;).ToString +&quot;.xlsx&quot;]" />
+                              <ui:CopyFile ContinueOnError="{x:Null}" Destination="[row(&quot;Raiz&quot;).ToString + &quot;Control Facturas&quot;]" DisplayName="Copy File" sap:VirtualizedContainerService.HintSize="826,154" sap2010:WorkflowViewState.IdRef="CopyFile_1" Path="[UbicacionaGuardar +row(&quot;MCE&quot;).ToString +&quot;.xlsx&quot;]" />
                               <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Firefox" DisplayName="RCEL" sap:VirtualizedContainerService.HintSize="826,992" sap2010:WorkflowViewState.IdRef="BrowserScope_7" InformativeScreenshot="e7166ef49faa72a7fd027c2e575f3639" Selector="&lt;html app='firefox.exe' title='RCEL' /&gt;">
                                 <ui:BrowserScope.Body>
                                   <ActivityAction x:TypeArguments="x:Object">
@@ -653,7 +653,7 @@
                                                             <OutArgument x:TypeArguments="x:Int32">[FilaFactura]</OutArgument>
                                                           </Assign.To>
                                                           <Assign.Value>
-                                                            <InArgument x:TypeArguments="x:Int32">[FilaFactura +1]</InArgument>
+                                                            <InArgument x:TypeArguments="x:Int32">[FilaFactura +3]</InArgument>
                                                           </Assign.Value>
                                                         </Assign>
                                                         <ui:WriteCell Cell="[&quot;Q&quot; + FilaFactura.ToString]" DisplayName="Write Cell Workbook" sap:VirtualizedContainerService.HintSize="434,116" sap2010:WorkflowViewState.IdRef="WriteCell_1" SheetName="Sheet1" Text="OK" WorkbookPath="[&quot;Control Facturas\&quot; +row(&quot;MCE&quot;).ToString +&quot;.xlsx&quot;]" />
