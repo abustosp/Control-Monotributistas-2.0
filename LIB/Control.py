@@ -49,14 +49,18 @@ def Extraer_PDF_info(PDFpath: str):
             
             Archivo = i.split("/")[-1].replace(".pdf", "")
 
-            # Extraer el COD de de factura
-            Cod = re.search(r"COD. (\d+)", texto)
-            Cod = Cod.group(1)
+            # Extraer el COD de de factura (Puede aparecer como "COD." o "CÓD.")
+            Cod1 = re.search(r"(CÓD.)(\s)*(\d+)", texto)
+            Cod2 = re.search(r"(COD.)(\s)*(\d+)", texto)
+            if Cod1 == None:
+                Cod = Cod2.group(3)
+            else:
+                Cod = Cod1.group(3)
             #print(Cod)
 
-            # Extraer el CUIT del emisor
+            # Extraer primer match el CUIT del emisor
             CUIT = re.search(r"CUIT: (\d+)", texto)
-            CUIT = CUIT.group(1)
+            CUIT = CUIT.group(1) 
             #print(CUIT)
 
             # Extraer el punto de venta
