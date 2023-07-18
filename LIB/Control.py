@@ -37,75 +37,79 @@ def Extraer_PDF_info(PDFpath: str):
     lista_archivos = [i for i in lista_archivos if os.path.getsize(i) > 10000]
 
     # Crear un dataframe vacío
-    df = pd.DataFrame(columns=["Archivo PDF", "CUIT del Emisor" , "COD" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])
+    df = pd.DataFrame(columns=["Archivo PDF", "CUIT del Emisor" , "COD" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta" , "AUX"])
 
     # Extraer el texto de los archivos PDF solamente de la primera página
-    for i in lista_archivos:
-        with pdfplumber.open(i) as pdf:
-            primera_pagina = pdf.pages[0]
-            texto = primera_pagina.extract_text()
-            #print(texto)
-            #print("--------------------------------------------------")
-            
-            Archivo = i.split("/")[-1].replace(".pdf", "")
 
-            # Extraer el COD de de factura (Puede aparecer como "COD." o "CÓD.")
-            Cod1 = re.search(r"(CÓD.)(\s)*(\d+)", texto)
-            Cod2 = re.search(r"(COD.)(\s)*(\d+)", texto)
-            if Cod1 == None:
-                Cod = Cod2.group(3)
-            else:
-                Cod = Cod1.group(3)
-            #print(Cod)
+    # si no hay elementos en la lista, no hacer nada
+    if len(lista_archivos) > 0:
 
-            # Extraer primer match el CUIT del emisor
-            CUIT = re.search(r"CUIT: (\d+)", texto)
-            CUIT = CUIT.group(1) 
-            #print(CUIT)
+        for i in lista_archivos:
+            with pdfplumber.open(i) as pdf:
+                primera_pagina = pdf.pages[0]
+                texto = primera_pagina.extract_text()
+                #print(texto)
+                #print("--------------------------------------------------")
+                
+                Archivo = i.split("/")[-1].replace(".pdf", "")
 
-            # Extraer el punto de venta
-            punto_venta = re.search(r"Punto de Venta: (\d+)", texto)
-            punto_venta = punto_venta.group(1)
-            #print(punto_venta)
+                # Extraer el COD de de factura (Puede aparecer como "COD." o "CÓD.")
+                Cod1 = re.search(r"(CÓD.)(\s)*(\d+)", texto)
+                Cod2 = re.search(r"(COD.)(\s)*(\d+)", texto)
+                if Cod1 == None:
+                    Cod = Cod2.group(3)
+                else:
+                    Cod = Cod1.group(3)
+                #print(Cod)
 
-            # Extraer el número de factura
-            numero_factura = re.search(r"Comp. Nro: (\d+)", texto)
-            numero_factura = numero_factura.group(1)
-            #print(numero_factura)
+                # Extraer primer match el CUIT del emisor
+                CUIT = re.search(r"CUIT: (\d+)", texto)
+                CUIT = CUIT.group(1) 
+                #print(CUIT)
 
-            # Extraer la fecha
-            fecha = re.search(r"Fecha de Emisión: (\d+/\d+/\d+)", texto)
-            fecha = fecha.group(1)
-            #print(fecha)
+                # Extraer el punto de venta
+                punto_venta = re.search(r"Punto de Venta: (\d+)", texto)
+                punto_venta = punto_venta.group(1)
+                #print(punto_venta)
 
-            # Extraer el rango de facturas, si no existe se deja vacío
-            Desde = re.search(r"Desde: (\d+/\d+/\d+)", texto)
-            if Desde == None:
-                Desde = ""
-            else:
-                Desde = Desde.group(1)
-            #print(Desde)
-            Hasta = re.search(r"Hasta:(\d+/\d+/\d+)", texto)
-            if Hasta == None:
-                Hasta = ""
-            else:
-                Hasta = Hasta.group(1)
-            #print(Hasta)
+                # Extraer el número de factura
+                numero_factura = re.search(r"Comp. Nro: (\d+)", texto)
+                numero_factura = numero_factura.group(1)
+                #print(numero_factura)
 
-            # Agregar una linea nueva con los datos extraidos
-            df = pd.concat([df, pd.DataFrame([[Archivo, Cod, CUIT, punto_venta, numero_factura, fecha, Desde, Hasta]], columns=["Archivo PDF", "COD" , "CUIT del emisor" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])], ignore_index=True)
+                # Extraer la fecha
+                fecha = re.search(r"Fecha de Emisión: (\d+/\d+/\d+)", texto)
+                fecha = fecha.group(1)
+                #print(fecha)
 
-    # Transformar las columnas 'COD' , 'CUIT del emisor' , 'Punto de Venta' y 'Número de Factura' a int
-    df["COD"] = df["COD"].astype(int)
-    df["CUIT del emisor"] = df["CUIT del emisor"].astype(np.int64)
-    df["Punto de Venta"] = df["Punto de Venta"].astype(int)
-    df["Número de Factura"] = df["Número de Factura"].astype(int)
+                # Extraer el rango de facturas, si no existe se deja vacío
+                Desde = re.search(r"Desde: (\d+/\d+/\d+)", texto)
+                if Desde == None:
+                    Desde = ""
+                else:
+                    Desde = Desde.group(1)
+                #print(Desde)
+                Hasta = re.search(r"Hasta:(\d+/\d+/\d+)", texto)
+                if Hasta == None:
+                    Hasta = ""
+                else:
+                    Hasta = Hasta.group(1)
+                #print(Hasta)
 
-    # Crear una columna 'AUX' con el 'COD' , 'CUIT del emisor' , el 'Punto de Venta' y 'Número de Factura'
-    df["AUX"] = df["COD"].astype(str) + "-" + df["Punto de Venta"].astype(str) + "-" + df["Número de Factura"].astype(str)
+                # Agregar una linea nueva con los datos extraidos
+                df = pd.concat([df, pd.DataFrame([[Archivo, Cod, CUIT, punto_venta, numero_factura, fecha, Desde, Hasta]], columns=["Archivo PDF", "COD" , "CUIT del emisor" , "Punto de Venta", "Número de Factura", "Fecha", "Desde" , "Hasta"])], ignore_index=True)
 
-    # Exportar el dataframe a un archivo csv
-    df.to_excel("Datos de Facturas PDF.xlsx", index=False)
+        # Transformar las columnas 'COD' , 'CUIT del emisor' , 'Punto de Venta' y 'Número de Factura' a int
+        df["COD"] = df["COD"].astype(int)
+        df["CUIT del emisor"] = df["CUIT del emisor"].astype(np.int64)
+        df["Punto de Venta"] = df["Punto de Venta"].astype(int)
+        df["Número de Factura"] = df["Número de Factura"].astype(int)
+
+        # Crear una columna 'AUX' con el 'COD' , 'CUIT del emisor' , el 'Punto de Venta' y 'Número de Factura'
+        df["AUX"] = df["COD"].astype(str) + "-" + df["Punto de Venta"].astype(str) + "-" + df["Número de Factura"].astype(str)
+
+        # Exportar el dataframe a un archivo csv
+        df.to_excel("Datos de Facturas PDF.xlsx", index=False)
 
     End = time.time()
 
