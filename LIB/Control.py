@@ -173,6 +173,9 @@ def Control(MCpath: str , PDFPath: str):
                 data['CUIT Cliente'] = data["Archivo"].str.split("-").str[3].str.strip().astype(np.int64)
                 data['Fin CUIT'] = data["Archivo"].str.split("-").str[0].str.strip().astype(np.int64)
                 data['Cliente'] = data["Archivo"].str.split("-").str[-1].str.strip().replace('.xlsx','', regex=True)
+                # Si el df data tiene 17 columnas, entonces se debe eliminar la ultima columna
+                if len(data.columns) == 17:
+                    data.drop(data.columns[[-1]], axis=1, inplace=True)
                 Consolidado = pd.concat([Consolidado , data])
             
     # Renombrar columnas
