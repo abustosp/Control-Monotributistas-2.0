@@ -245,6 +245,10 @@ def Control(MCpath: str , PDFPath: str):
     # Crear una columna 'Importe por día' con el valor de la columna 'Imp. Total' dividido entre el valor de la columna 'Dias de facturación'
     Consolidado['Importe por día'] = Consolidado['Imp. Total'] / Consolidado['Dias de facturación']
 
+
+    # Si los 'Días Efectivos' son menores a 0, entonces se reemplaza por 0
+    Consolidado.loc[Consolidado['Días Efectivos'] < 0, 'Días Efectivos'] = 0
+
     # Multiplicar el valor de la columna 'Importe por día' por el valor de la columna 'Días Efectivos' y guardar el resultado en la columna 'Importe Prorrateado'
     Consolidado['Importe Prorrateado'] = Consolidado['Importe por día'] * Consolidado['Días Efectivos']
 
