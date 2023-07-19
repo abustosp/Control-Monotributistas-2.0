@@ -221,33 +221,29 @@ def Control(MCpath: str , PDFPath: str):
     Consolidado['Hasta'] = pd.to_datetime(Consolidado['Hasta'], format='%d/%m/%Y')
     Consolidado['Fecha'] = pd.to_datetime(Consolidado['Fecha'], format='%d/%m/%Y')
 
-    # Crear columna auxiliar con la diferencia entre fecha_inicial y 'FECHA EMISION' en dias
-    Consolidado['Diferencia_inicial'] = Consolidado['Desde'] - fecha_inicial
-    Consolidado['Diferencia_inicial'] = Consolidado['Diferencia_inicial'].dt.days
+    # Crear columna auxiliar en Consolidado con el máximo entre la variable fecha_inicial y la columna 'FECHA EMISION'
+    Consolidado['Fecha Inicial'] = fecha_inicial
+    Consolidado['Fecha_Inicial_max'] = Consolidado[['Fecha Inicial' , 'Desde']].max(axis=1)
+    del Consolidado['Fecha Inicial']
 
-    # Crear columna auxiliar con la diferencia entre fecha_final y 'HASTA'
-    Consolidado['Diferencia_final'] =  fecha_final - Consolidado['Hasta']
-    Consolidado['Diferencia_final'] = Consolidado['Diferencia_final'].dt.days
+    # Crear columna auxiliar en Consolidado con el mínimo entre la variable fecha_final y la columna 'HASTA'
+    Consolidado['Fecha Final'] = fecha_final
+    Consolidado['Fecha_Final_min'] = Consolidado[['Fecha Final' , 'Hasta']].min(axis=1)
+    del Consolidado['Fecha Final']
 
     # Calcular los dias de diferencia entre 'FECHA EMISION' y 'HASTA'
     Consolidado['Dias de facturación'] = Consolidado['Hasta'] - Consolidado['Desde'] 
     Consolidado['Dias de facturación'] = Consolidado['Dias de facturación'].dt.days +1
 
-    # Crear una columa 'Días Efectivos' con el valor de la columna 'Dias de facturación'
-    Consolidado['Días Efectivos'] = Consolidado['Dias de facturación']
+    # Crear una columa 'Días Efectivos' como la diferencia entre la columna 'Fecha_Final_min' y la columna 'Fecha_Inicial_max'
+    Consolidado['Días Efectivos'] = Consolidado['Fecha_Final_min'] - Consolidado['Fecha_Inicial_max']
+    Consolidado['Días Efectivos'] = Consolidado['Días Efectivos'].dt.days +1
 
-    # si la columna 'Diferencia_inicial' es negativa, entonces al valor de la columna 'Días Efectivos' se le resta el valor de la columna 'Diferencia_inicial'
-    Consolidado.loc[Consolidado['Diferencia_inicial'] < 0, 'Días Efectivos'] = Consolidado['Días Efectivos'] + Consolidado['Diferencia_inicial']
-
-    # si la columna 'Diferencia_final' es negativa, entonces al valor de la columna 'Días Efectivos' se le resta el valor de la columna 'Diferencia_final'
-    Consolidado.loc[Consolidado['Diferencia_final'] < 0, 'Días Efectivos'] = Consolidado['Días Efectivos'] + Consolidado['Diferencia_final']
+    # si los 'Días Efectivos' son menores a 0, entonces se reemplaza por 0
+    Consolidado.loc[Consolidado['Días Efectivos'] < 0, 'Días Efectivos'] = 0
 
     # Crear una columna 'Importe por día' con el valor de la columna 'Imp. Total' dividido entre el valor de la columna 'Dias de facturación'
     Consolidado['Importe por día'] = Consolidado['Imp. Total'] / Consolidado['Dias de facturación']
-
-
-    # Si los 'Días Efectivos' son menores a 0, entonces se reemplaza por 0
-    Consolidado.loc[Consolidado['Días Efectivos'] < 0, 'Días Efectivos'] = 0
 
     # Multiplicar el valor de la columna 'Importe por día' por el valor de la columna 'Días Efectivos' y guardar el resultado en la columna 'Importe Prorrateado'
     Consolidado['Importe Prorrateado'] = Consolidado['Importe por día'] * Consolidado['Días Efectivos']
@@ -256,6 +252,8 @@ def Control(MCpath: str , PDFPath: str):
     Consolidado['Desde'] = Consolidado['Desde'].dt.strftime('%d/%m/%Y')
     Consolidado['Hasta'] = Consolidado['Hasta'].dt.strftime('%d/%m/%Y')
     Consolidado['Fecha'] = Consolidado['Fecha'].dt.strftime('%d/%m/%Y')
+    Consolidado['Fecha_Inicial_max'] = Consolidado['Fecha_Inicial_max'].dt.strftime('%d/%m/%Y')
+    Consolidado['Fecha_Final_min'] = Consolidado['Fecha_Final_min'].dt.strftime('%d/%m/%Y')
 
     No_Cruzado = 0
 
