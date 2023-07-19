@@ -84,6 +84,22 @@
   {
    "optionDest": "pathex",
    "value": "F:/ENV/ControlMono2/Lib/site-packages"
+  },
+  {
+   "optionDest": "datas",
+   "value": "F:/Proyectos Python/Scripts/Control-Monotributistas-2.0/Categorias.xlsx;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "F:/Proyectos Python/Scripts/Control-Monotributistas-2.0/LICENSE;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "F:/Proyectos Python/Scripts/Control-Monotributistas-2.0/README.md;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "F:/Proyectos Python/Scripts/Control-Monotributistas-2.0/Requirements.txt;."
   }
  ],
  "nonPyinstallerOptions": {
