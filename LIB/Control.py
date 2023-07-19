@@ -106,7 +106,7 @@ def Extraer_PDF_info(PDFpath: str):
         df["Número de Factura"] = df["Número de Factura"].astype(int)
 
         # Crear una columna 'AUX' con el 'COD' , 'CUIT del emisor' , el 'Punto de Venta' y 'Número de Factura'
-        df["AUX"] = df["COD"].astype(str) + "-" + df["Punto de Venta"].astype(str) + "-" + df["Número de Factura"].astype(str)
+        df["AUX"] = df["COD"].astype(str) + "-" + df["Punto de Venta"].astype(str) + "-" + df["Número de Factura"].astype(str) + "-" + df["CUIT del emisor"].astype(str)
 
         # Exportar el dataframe a un archivo csv
         df.to_excel("Datos de Facturas PDF.xlsx", index=False)
@@ -193,7 +193,7 @@ def Control(MCpath: str , PDFPath: str):
 
     Consolidado['Tipo'] = Consolidado['Tipo'].str.split(" ").str[0].str.strip().astype(int)
     
-    Consolidado['AUX'] = Consolidado['Tipo'].astype(str) + "-" + Consolidado['Punto de Venta'].astype(str) + "-" + Consolidado['Número Desde'].astype(str)
+    Consolidado['AUX'] = Consolidado['Tipo'].astype(str) + "-" + Consolidado['Punto de Venta'].astype(str) + "-" + Consolidado['Número Desde'].astype(str) + "-" + Consolidado['CUIT Cliente'].astype(str)
 
     # Merge con la tabla Info_Facturas_PDF 
     Consolidado = pd.merge(Consolidado , 
