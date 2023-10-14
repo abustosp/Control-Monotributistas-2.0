@@ -2,16 +2,16 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 
-#define MyAppName "Control de Monotributistas 2.0.5"
-#define MyAppVersion "2.0.5"
+#define MyAppName "Control de Monotributistas 2.0.6"
+#define MyAppVersion "2.0.6"
 #define MyAppPublisher "Agustín Bustos Piasentini"
 #define MyAppURL "https://www.agustin-bustos-piasentini.com.ar/"
 #define MyAppExeName "Control-Monotributistas-2.0.exe"
-#define UbicacionDeExeDeAutopyToExe "F:\Proyectos Python\Utilidades\auto-py-to-exe\Scripts\output\Control-Monotributistas-2.0"
+#define UbicacionDeExeDeAutopyToExe "F:\ENV\.auto-py-to-exe\Scripts\output\Control-Monotributistas-2.0"
 #define PathDeLicencia "F:\Proyectos Python\Cheatsheets y documentacion\LICENSE"
 #define IconoDeInstalador "F:\Papeles de trabajo\ABP\ABP-blanco-en-fondo-negro.ico"
-#define NombreDeExe "Setup Control de Monotributistas V2.0.5"
-#define SalidaDeInstalador "C:\Users\Agustin Bustos\Desktop"
+#define NombreDeExe "Setup Control de Monotributistas V2.0.6"
+#define SalidaDeInstalador "C:\Users\ABP\Desktop"
 #define GUID "{{50C4CE09-0F7A-4FB4-AE53-3F93F9A4C5C0}" 
 
 
